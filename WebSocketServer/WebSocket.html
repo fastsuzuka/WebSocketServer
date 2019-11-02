@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title></title>
+<meta charset="utf-8">
+<meta name="description" content="">
+<meta name="author" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="">
+<link rel="shortcut icon" href="">
+</head>
+<body>
+  <div id="log" style="border-width: 2px; border-style: solid;">
+
+  </div>
+  <input type="text" id="txtCmd" />
+  <input type="button" value="送信" id="btnSend" onclick="onSend()" />
+  <input type="button" value="切断" id="btnSend" onclick="onClose()" />
+
+  <script>
+      var wsUrl = "ws://127.0.0.1:8080";
+      var webSocket = null;
+
+      var logDiv = document.getElementById("log");
+      var cmdText = document.getElementById("txtCmd");
+
+      window.onload = function () {
+        //WebSocketオブジェクト作成
+        if (typeof WebSocket != "undefined"){
+          //Chromeで動作確認
+          webSocket = new WebSocket(wsUrl);
+        }
+        else{
+          alert('Non support this browser.');
+        }
+
+        //イベントハンドラの設定
+        if (webSocket){
+
+            //接続
+            webSocket.onopen = function() {
+              logDiv.innerHTML += "onopen<br />";
+                webSocket.send("Open");
+            };
+
+            //メッセージ受信
+            webSocket.onmessage = function(event) {
+              logDiv.innerHTML += "onmessage: " + event.data + "<br />";
+            };
+
+            //切断
+            webSocket.onclose = function() {
+              logDiv.innerHTML += "onclose<br />";
+            };
+        }
+      }
+
+      function onSend() {
+        logDiv.innerHTML += "onSend: " + cmdText.value + "<br />";
+        webSocket.send(cmdText.value);
+      }
+      function onClose() {
+        webSocket.close();
+      }
+  </script>
+</body>
+</html>
